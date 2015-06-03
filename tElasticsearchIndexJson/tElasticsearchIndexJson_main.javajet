@@ -12,15 +12,15 @@
 		org.talend.core.model.metadata.types.JavaType
 		java.util.List 
     	java.util.Map		
-	" 
-
+	"
+%>
+String key="";
+String json="";
+<%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
-%>
-String key<%=cid %>="";
-String json<%=cid %>="";
-<%
+
 String esIndex = ElementParameterParser.getValue(node, "__ES_INDEX__");
 String esType = ElementParameterParser.getValue(node, "__ES_TYPE__");
 String esBatchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
@@ -53,12 +53,12 @@ if(conns!=null){
 				
                 if(column.isKey()){
 				%>
-                	key<%=cid %>+=<%=conn.getName()%>.<%=column.getLabel()%>;
+                	key += <%=conn.getName()%>.<%=column.getLabel()%>;
 				<%
                 } 
             }
             %>
-            	json<%=cid %> = <%=conn.getName()%>.<%=bodyField%>; 
+            	json = <%=conn.getName()%>.<%=bodyField%>;
            <%
         }
     }
@@ -66,12 +66,12 @@ if(conns!=null){
 
 %>
 
-if(key<%=cid %>.isEmpty()){
+if(key.isEmpty()){
 	bulkRequest<%=cid %>.add(esClient<%=cid %>.prepareIndex(<%=esIndex %>, <%=esType %>)
-    				.setSource(json<%=cid %>));
+    				.setSource(json));
 }else{
-	bulkRequest<%=cid %>.add(esClient<%=cid %>.prepareIndex(<%=esIndex %>, <%=esType %>, key<%=cid %>)
-    				.setSource(json<%=cid %>));
+	bulkRequest<%=cid %>.add(esClient<%=cid %>.prepareIndex(<%=esIndex %>, <%=esType %>, key)
+    				.setSource(json));
 }
 bulkRequestsSize<%=cid %>++;    	
 nb_line_<%=cid %>++;			
